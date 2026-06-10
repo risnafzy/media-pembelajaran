@@ -279,7 +279,7 @@
                             <a href="{{ route('siswa.course.materi', $course->id) }}"
                                 class="inline-flex items-center gap-2 px-6 py-2.5 text-xs bg-blue-600 hover:bg-blue-800 text-white font-bold rounded-xl shadow transition-all">
 
-                                Lanjut ke Materi →
+                                Lanjut ke Materi
 
                             </a>
                         @endif

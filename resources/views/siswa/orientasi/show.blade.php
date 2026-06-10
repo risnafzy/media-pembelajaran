@@ -72,16 +72,39 @@
                                 focus:border-[#37B7C3] focus:ring-4 focus:ring-[#37B7C3]/5 transition-all outline-none resize-none shadow-sm
                                 {{ isset($jawabanSiswa[$p->id]) ? 'bg-slate-50 text-slate-500 italic cursor-not-allowed' : '' }}"
                                 placeholder="Tuliskan analisis Anda...">{{ $jawabanSiswa[$p->id]->jawaban ?? '' }}</textarea>
+
                         </div>
+
                     </div>
                 </div>
             @endforeach
+
+            @if ($jawabanSiswa->count() == $orientasi->pertanyaan->count())
+
+                <div class="rounded-3xl border border-blue-200 bg-blue-50 p-6">
+
+                    <h3 class="font-bold text-blue-800 mb-3">
+                        💬 Umpan Balik Guru
+                    </h3>
+
+                    @if ($feedback)
+                        <div class="text-sm text-blue-900 whitespace-pre-line">
+                            {{ $feedback->komentar }}
+                        </div>
+                    @else
+                        <div class="text-sm text-slate-500 italic">
+                            Belum ada umpan balik dari guru.
+                        </div>
+                    @endif
+
+                </div>
+
+            @endif
 
             {{-- Tombol Navigasi --}}
             <div class="flex justify-between items-center pt-4">
 
                 @if ($jawabanSiswa->count() < $orientasi->pertanyaan->count())
-
                     <div></div>
 
                     {{-- TOMBOL SIMPAN (TENGAH) --}}

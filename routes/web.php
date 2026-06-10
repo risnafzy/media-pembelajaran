@@ -139,6 +139,9 @@
             Route::post('/store','store')->name('store');
             Route::post('/pilih-kasus', 'pilihKasus')->name('pilihKasus');
 
+            Route::post('/presentasi/store','storePresentation')->name('presentasi.store');
+
+
         });
 
 
@@ -149,9 +152,14 @@
             'course/{course}/materi/{step?}',
             [SiswaMateriController::class,'index']
         )->name('course.materi');
-            Route::post('/course/{course}/materi/selesai',
-            [SiswaMateriController::class,'selesai']
-            )->name('course.materi.selesai');
+        Route::post(
+            'course/{course}/materi/selesai',
+            [SiswaMateriController::class, 'selesai']
+        )->name('course.materi.selesai');
+        Route::post(
+            'course/{course}/materi/abstraksi',
+            [SiswaMateriController::class,'simpanAbstraksi']
+        )->name('course.materi.abstraksi');
 
 
         /*
@@ -396,6 +404,11 @@
             Route::post('rekap-lkpd/save', [NilaiController::class, 'saveScore'])
                 ->name('save');
 
+        Route::post(
+            'abstraction/save',
+            [NilaiController::class, 'saveAbstraction']
+        )->name('abstraction.save');
+
             // =========================
             // ORIENTASI
             // =========================
@@ -404,6 +417,9 @@
 
             Route::get('rekap-orientasi/{course}/{user}', [OrientasiController::class,'showRekapOrientasi'])
                 ->name('rekap.orientasi.show');
+
+            Route::post('rekap-orientasi/feedback',[OrientasiController::class,'saveFeedbackOrientasi'])
+            ->name('orientasi.feedback');
 
             // =========================
             // REFLEKSI

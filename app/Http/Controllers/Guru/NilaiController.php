@@ -12,6 +12,8 @@ use App\Models\LkpdCase;
 use App\Models\User;
 use App\Models\Course;
 use Illuminate\Http\Request;
+use App\Models\LkpdPresentation;
+use App\Models\MaterialAbstraction;
 
 class NilaiController extends Controller
 {
@@ -108,13 +110,60 @@ class NilaiController extends Controller
                 ->where('lkpd_case_id', $selectedCase->id)
                 ->first();
         }
+        $presentation = null;
+
+        if ($selectedCase) {
+
+            $presentation = LkpdPresentation::where(
+                'user_id',
+                $userId
+            )
+            ->where(
+                'lkpd_case_id',
+                $selectedCase->id
+            )
+            ->first();
+
+        }
+
+        $abstraction = MaterialAbstraction::where([
+            'user_id' => $userId,
+            'course_id' => $courseId
+        ])->first();
+
 
         return view('guru.lkpd.show', compact(
             'user',
             'cases',
             'answers',
-            'existingScore'
+            'existingScore',
+            'presentation',
+            'abstraction'
+
         ));
+    }
+
+    public function saveAbstraction(Request $request)
+    {
+        $request->validate([
+            'abstraction_id' => 'required',
+            'status_validasi' => 'required',
+            'feedback_guru' => 'nullable'
+        ]);
+
+        $abstraction = MaterialAbstraction::findOrFail(
+            $request->abstraction_id
+        );
+
+        $abstraction->update([
+            'status_validasi' => $request->status_validasi,
+            'feedback_guru' => $request->feedback_guru
+        ]);
+
+        return back()->with(
+            'success',
+            'Validasi abstraksi berhasil disimpan'
+        );
     }
 
     public function saveScore(Request $request)

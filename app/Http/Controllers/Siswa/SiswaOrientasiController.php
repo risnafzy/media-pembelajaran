@@ -9,6 +9,7 @@ use App\Models\CourseProgress;
 use App\Models\JawabanPertanyaanOrientasi;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use App\Models\OrientasiFeedback;
 
 class SiswaOrientasiController extends Controller
 {
@@ -30,6 +31,14 @@ public function show(Course $course)
         ->get()
         ->keyBy('pertanyaan_orientasi_id');
 
+$feedback = OrientasiFeedback::where(
+    'user_id',
+    Auth::id()
+)->where(
+    'course_id',
+    $course->id
+)->first();
+
     // ambil progress
     [$progress, $percent, $unlock] = $this->progress($course);
 
@@ -41,6 +50,7 @@ public function show(Course $course)
         'unlock' => $unlock,
         'progress' => $progress,
         'jawabanSiswa' => $jawabanSiswa,
+        'feedback' => $feedback,
         'orientasi' => $orientasi
     ]);
 }

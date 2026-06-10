@@ -42,9 +42,8 @@
                 $idsLanjutan = $selectedCase
                     ? $selectedCase->questions
                         ->where('no_soal', '>=', 2)
-                        ->flatMap(fn($q) => $q->subQuestions->count() > 0
-                            ? $q->subQuestions->pluck('id')
-                            : collect([$q->id])
+                        ->flatMap(
+                            fn($q) => $q->subQuestions->count() > 0 ? $q->subQuestions->pluck('id') : collect([$q->id]),
                         )
                     : collect();
 
@@ -60,7 +59,8 @@
                         <div class="flex gap-4">
 
                             {{-- NOMOR SOAL --}}
-                            <div class="w-8 h-8 bg-[#071952] text-white rounded-xl flex items-center justify-center font-bold">
+                            <div
+                                class="w-8 h-8 bg-[#071952] text-white rounded-xl flex items-center justify-center font-bold">
                                 {{ $q->no_soal }}
                             </div>
 
@@ -75,21 +75,20 @@
 
                                     {{-- ================= SUB / LANGSUNG ================= --}}
                                     @if ($q->subQuestions->count() > 0)
-
                                         {{-- SUB QUESTION --}}
                                         @foreach ($q->subQuestions as $sub)
                                             <div class="space-y-2">
 
                                                 <div class="flex gap-2 text-sm text-slate-600">
-                                                    <span class="w-5 h-5 bg-[#EBF4F6] text-[#088395] flex items-center justify-center text-xs font-bold rounded">
+                                                    <span
+                                                        class="w-5 h-5 bg-[#EBF4F6] text-[#088395] flex items-center justify-center text-xs font-bold rounded">
                                                         {{ $sub->label }}
                                                     </span>
 
                                                     <div>{!! $sub->pertanyaan !!}</div>
                                                 </div>
 
-                                                <textarea name="jawaban_sub[{{ $sub->id }}]" rows="3"
-                                                    {{ $sudahIsi ? 'readonly' : 'required' }}
+                                                <textarea name="jawaban_sub[{{ $sub->id }}]" rows="3" {{ $sudahIsi ? 'readonly' : 'required' }}
                                                     class="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700
                                                     focus:border-[#37B7C3] focus:ring-4 focus:ring-[#37B7C3]/5 transition-all outline-none resize-none shadow-sm
                                                     {{ $sudahIsi ? 'bg-slate-50 text-slate-500 italic cursor-not-allowed' : '' }}"
@@ -97,9 +96,7 @@
 
                                             </div>
                                         @endforeach
-
                                     @else
-
                                         {{-- TANPA SUB --}}
                                         <div class="space-y-2">
 
@@ -107,15 +104,13 @@
                                                 Jawaban:
                                             </div>
 
-                                            <textarea name="jawaban_q[{{ $q->id }}]" rows="3"
-                                                {{ $sudahIsi ? 'readonly' : 'required' }}
+                                            <textarea name="jawaban_q[{{ $q->id }}]" rows="3" {{ $sudahIsi ? 'readonly' : 'required' }}
                                                 class="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700
                                                 focus:border-[#37B7C3] focus:ring-4 focus:ring-[#37B7C3]/5 transition-all outline-none resize-none shadow-sm
                                                 {{ $sudahIsi ? 'bg-slate-50 text-slate-500 italic cursor-not-allowed' : '' }}"
                                                 placeholder="Ketik jawaban Anda di sini...">{{ $jawaban[$q->id] ?? '' }}</textarea>
 
                                         </div>
-
                                     @endif
 
                                 </div>
@@ -156,4 +151,45 @@
         </form>
 
     </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+
+            const courseId = "{{ $course->id }}";
+            const caseId = "{{ $selectedCase->id ?? 0 }}";
+
+            document.querySelectorAll('textarea').forEach(textarea => {
+
+                const key = `lkpd_${courseId}_${caseId}_${textarea.name}`;
+
+                // Ambil data yang tersimpan jika textarea masih kosong
+                const savedValue = localStorage.getItem(key);
+
+                if (savedValue && textarea.value.trim() === '') {
+                    textarea.value = savedValue;
+                }
+
+                // Simpan otomatis saat mengetik
+                textarea.addEventListener('input', function() {
+                    localStorage.setItem(key, this.value);
+                });
+
+            });
+
+            // Hapus cache localStorage setelah form berhasil disubmit
+            const form = document.querySelector('form');
+
+            form?.addEventListener('submit', function() {
+
+                document.querySelectorAll('textarea').forEach(textarea => {
+
+                    const key = `lkpd_${courseId}_${caseId}_${textarea.name}`;
+
+                    localStorage.removeItem(key);
+                });
+
+            });
+
+        });
+    </script>
 @endsection

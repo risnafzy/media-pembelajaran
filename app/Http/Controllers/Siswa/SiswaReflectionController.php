@@ -46,6 +46,24 @@ public function index(Course $course)
         'course_id' => $course->id
     ]);
 
+    $presentation = \App\Models\LkpdPresentation::where(
+    'user_id',
+    Auth::id()
+    )->first();
+
+    if (
+        !$presentation ||
+        empty(trim($presentation->argumen_solusi ?? '')) ||
+        empty(trim($presentation->temuan_pola ?? ''))
+    ) {
+        return redirect()
+            ->route('siswa.course.lkpd.presentasi', $course->id)
+            ->with(
+                'error',
+                'Selesaikan Argumen Solusi dan Pattern Recognition terlebih dahulu.'
+            );
+    }
+
     $done = collect([
         $progress->orientasi ,
         $progress->lkpd1 ,

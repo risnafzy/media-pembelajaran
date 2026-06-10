@@ -9,6 +9,8 @@ use App\Models\PertanyaanOrientasi;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\JawabanPertanyaanOrientasi;
+use App\Models\OrientasiFeedback;
+
 
 class OrientasiController extends Controller
 {
@@ -30,17 +32,34 @@ class OrientasiController extends Controller
     }
 
     public function showRekapOrientasi($courseId, $userId)
-{
-    $orientasi = Orientasi::where('course_id', $courseId)
-        ->with(['pertanyaan.jawaban' => function ($q) use ($userId) {
-            $q->where('user_id', $userId);
-        }, 'pertanyaan.jawaban.user'])
-        ->firstOrFail();
+    {
+        $orientasi = Orientasi::where('course_id', $courseId)
+            ->with([
+                'pertanyaan.jawaban' => function ($q) use ($userId) {
+                    $q->where('user_id', $userId);
+                }
+            ])
+            ->firstOrFail();
 
-    $user = \App\Models\User::findOrFail($userId);
+        $user = \App\Models\User::findOrFail($userId);
 
-    return view('guru.orientasi.show', compact('orientasi','user'));
-}
+        $feedback = OrientasiFeedback::where(
+            'user_id',
+            $userId
+        )->where(
+            'course_id',
+            $courseId
+        )->first();
+
+        return view(
+            'guru.orientasi.show',
+            compact(
+                'orientasi',
+                'user',
+                'feedback'
+            )
+        );
+    }
 
     public function store(Request $request, $course_id)
     {
@@ -148,6 +167,30 @@ class OrientasiController extends Controller
         return redirect()
             ->route('guru.course.show', $course_id)
             ->with('success', 'Orientasi berhasil dihapus');
+    }
+
+    public function saveFeedbackOrientasi(Request $request)
+    {
+        $request->validate([
+            'user_id' => 'required',
+            'course_id' => 'required',
+            'komentar' => 'required|string'
+        ]);
+
+        OrientasiFeedback::updateOrCreate(
+            [
+                'user_id' => $request->user_id,
+                'course_id' => $request->course_id
+            ],
+            [
+                'komentar' => $request->komentar
+            ]
+        );
+
+        return back()->with(
+            'success',
+            'Feedback berhasil disimpan'
+        );
     }
 
 

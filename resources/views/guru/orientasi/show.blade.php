@@ -81,6 +81,35 @@
                     </div>
                 @endforeach
 
+                {{-- FEEDBACK GURU (HANYA SATU KALI) --}}
+                <div class="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">
+
+                    <h3 class="font-bold text-[#071952] mb-4">
+                        💬 Umpan Balik Guru
+                    </h3>
+
+                    <form method="POST" action="{{ route('guru.nilai.orientasi.feedback') }}">
+
+                        @csrf
+
+                        <input type="hidden" name="user_id" value="{{ $user->id }}">
+
+                        <input type="hidden" name="course_id" value="{{ $orientasi->course_id }}">
+
+                        <textarea name="komentar" rows="5" class="w-full rounded-xl border border-slate-300 px-4 py-3"
+                            placeholder="Tuliskan umpan balik untuk siswa...">{{ $feedback->komentar ?? '' }}</textarea>
+
+                        <button type="submit"
+                            class="mt-4 px-5 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-semibold">
+
+                            Simpan Feedback
+
+                        </button>
+
+                    </form>
+
+                </div>
+
             </div>
 
         </div>
