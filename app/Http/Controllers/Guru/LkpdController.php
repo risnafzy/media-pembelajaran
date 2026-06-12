@@ -27,7 +27,6 @@ class LkpdController extends Controller
 
         return Excel::download(new RekapLkpdExport($courseId), $fileName);
     }
-
     // =========================
     // CREATE
     // =========================
